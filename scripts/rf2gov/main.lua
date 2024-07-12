@@ -55,9 +55,40 @@ function getSensors()
     else
         if system.getSource("Rx RSSI1") ~= nil then
             -- we are running crsf
-            if system.getSource("Flight mode") ~= nil then
-                govmode = system.getSource("Flight mode"):stringValue()
-            end
+			local crsfSOURCE = system.getSource("Vbat")
+			if crsfSOURCE ~= nil then
+				-- crsf passthru
+				govId = system.getSource("Gov"):stringValue()
+			   if govId == 0 then
+					govmode = "OFF"
+				elseif govId == 1 then
+					govmode = "IDLE"
+				elseif govId == 2 then
+					govmode = "SPOOLUP"
+				elseif govId == 3 then
+					govmode = "RECOVERY"
+				elseif govId == 4 then
+					govmode = "ACTIVE"
+				elseif govId == 5 then
+					govmode = "THR-OFF"
+				elseif govId == 6 then
+					govmode = "LOST-HS"
+				elseif govId == 7 then
+					govmode = "SPOOLUP"
+				elseif govId == 8 then
+					govmode = "BAILOUT"
+				elseif govId == 100 then
+					govmode = "DISABLED"
+				elseif govId == 101 then
+					govmode = "DISARMED"
+				else
+					govmode = "UNKNOWN"
+				end					
+			else	
+				if system.getSource("Flight mode") ~= nil then
+					govmode = system.getSource("Flight mode"):stringValue()
+				end
+			end		
         else
             -- we are run sport
             if system.getSource({category = CATEGORY_TELEMETRY_SENSOR, appId = 0x5450}) ~= nil then
