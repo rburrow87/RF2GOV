@@ -102,7 +102,7 @@ function getSensors()
                 elseif govId == 6 then
                     govmode = "LOST-HS"
                 elseif govId == 7 then
-                    govmode = "SPOOLUP"
+                    govmode = "AUTOROT"
                 elseif govId == 8 then
                     govmode = "BAILOUT"
                 elseif govId == 100 then
