@@ -50,7 +50,7 @@ function getSensors()
             local crsfSOURCE = system.getSource("Vbat")
             if crsfSOURCE ~= nil then
                 -- crsf passthru
-                govId = system.getSource("Gov"):stringValue()
+                govId = system.getSource("Gov"):value()
                 if govId == 0 then
                     govmode = "OFF"
                 elseif govId == 1 then
@@ -140,7 +140,7 @@ local function wakeup(widget)
 end
 
 local function init()
-    system.registerWidget({key = "rf2gov", name = "RF GOVERNOR", create = create, paint = paint, wakeup = wakeup})
+    system.registerWidget({key = "rf2gov", name = "RF Governor", create = create, paint = paint, wakeup = wakeup})
 end
 
 return {init = init}
