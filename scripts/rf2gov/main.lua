@@ -1,146 +1,50 @@
---[[
-set crsf_flight_mode_reuse = GOV_ADJFUNC
-]] --
-refresh = true
-local environment = system.getVersion()
-local oldsensors = {"govmode"}
 
-function sensorMakeNumber(x)
-    if x == nil or x == "" then
-        x = 0
-    end
+local config = {}
+config.widgetName = "RF Governor"
+config.widgetKey = "rf2gov"
+config.widgetDir = "/scripts/rf2gov/"
+config.useCompiler = true
 
-    x = string.gsub(x, "%D+", "")
-    x = tonumber(x)
-    if x == nil or x == "" then
-        x = 0
-    end
+compile = assert(loadfile(config.widgetDir .. "compile.lua"))(config)
 
-    return x
+rf2gov = assert(compile.loadScript(config.widgetDir .. "rf2gov.lua"))(config,compile)
+
+local function paint()
+	return rf2gov.paint()
 end
 
-local function create(widget)
-    return WidgetTable
+
+local function wakeup()
+	return rf2gov.wakeup()
 end
 
-local function paint(widget)
-
-    local w, h = lcd.getWindowSize()
-
-    lcd.font(FONT_XXL)
-    str = sensors.govmode
-    tsizeW, tsizeH = lcd.getTextSize(str)
-
-    offsetY = 5
-
-    posX = w / 2 - tsizeW / 2
-    posY = h / 2 - tsizeH / 2 + offsetY
-
-    lcd.drawText(posX, posY, str)
-
+local function read()
+	return rf2gov.read()
 end
 
-function getSensors()
-
-    if environment.simulation == true then
-        govmode = "DISABLED"
-    else
-        if system.getSource("Rx RSSI1") ~= nil then
-            -- we are running crsf
-            local crsfSOURCE = system.getSource("Vbat")
-            if crsfSOURCE ~= nil then
-                -- crsf passthru
-                govId = system.getSource("Gov"):value()
-                if govId == 0 then
-                    govmode = "OFF"
-                elseif govId == 1 then
-                    govmode = "IDLE"
-                elseif govId == 2 then
-                    govmode = "SPOOLUP"
-                elseif govId == 3 then
-                    govmode = "RECOVERY"
-                elseif govId == 4 then
-                    govmode = "ACTIVE"
-                elseif govId == 5 then
-                    govmode = "THR-OFF"
-                elseif govId == 6 then
-                    govmode = "LOST-HS"
-                elseif govId == 7 then
-                    govmode = "AUTOROT"
-                elseif govId == 8 then
-                    govmode = "BAILOUT"
-                elseif govId == 100 then
-                    govmode = "DISABLED"
-                elseif govId == 101 then
-                    govmode = "DISARMED"
-                else
-                    govmode = "UNKNOWN"
-                end
-            else
-                if system.getSource("Flight mode") ~= nil then
-                    govmode = system.getSource("Flight mode"):stringValue()
-                end
-            end
-        else
-            -- we are run sport
-            if system.getSource({category = CATEGORY_TELEMETRY_SENSOR, appId = 0x5450}) ~= nil then
-                govId = system.getSource({category = CATEGORY_TELEMETRY_SENSOR, appId = 0x5450}):stringValue()
-                govId = sensorMakeNumber(govId)
-                -- print(govId)
-                if govId == 0 then
-                    govmode = "OFF"
-                elseif govId == 1 then
-                    govmode = "IDLE"
-                elseif govId == 2 then
-                    govmode = "SPOOLUP"
-                elseif govId == 3 then
-                    govmode = "RECOVERY"
-                elseif govId == 4 then
-                    govmode = "ACTIVE"
-                elseif govId == 5 then
-                    govmode = "THR-OFF"
-                elseif govId == 6 then
-                    govmode = "LOST-HS"
-                elseif govId == 7 then
-                    govmode = "AUTOROT"
-                elseif govId == 8 then
-                    govmode = "BAILOUT"
-                elseif govId == 100 then
-                    govmode = "DISABLED"
-                elseif govId == 101 then
-                    govmode = "DISARMED"
-                else
-                    govmode = "UNKNOWN"
-                end
-            else
-                govmode = ""
-            end
-        end
-    end
-
-    if oldsensors.govmode ~= govmode then
-        refresh = true
-    end
-
-    ret = {govmode = govmode}
-    oldsensors = ret
-
-    return ret
+local function write()
+	return rf2gov.write()
 end
 
-local function wakeup(widget)
-    refresh = false
-    sensors = getSensors()
 
-    if refresh == true then
-        lcd.invalidate()
-    end
 
-    return
+local function create()
+	return rf2gov.create()
 end
+
+
+
 
 local function init()
-    system.registerWidget({key = "rf2gov", name = "RF Governor", create = create, paint = paint, wakeup = wakeup})
+    system.registerWidget({
+        key = config.widgetKey,
+        name = config.widgetName,
+        create = create,
+        paint = paint,
+        wakeup = wakeup,
+        persistent = false
+    })
+
 end
 
 return {init = init}
