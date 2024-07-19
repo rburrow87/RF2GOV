@@ -3,27 +3,22 @@ set crsf_flight_mode_reuse = GOV_ADJFUNC
 ]] --
 rf2gov = {}
 
-
 rf2gov.refresh = true
 rf2gov.environment = system.getVersion()
 rf2gov.oldsensors = {"govmode"}
 
 function rf2gov.sensorMakeNumber(x)
-    if x == nil or x == "" then
-        x = 0
-    end
+    if x == nil or x == "" then x = 0 end
 
     x = string.gsub(x, "%D+", "")
     x = tonumber(x)
-    if x == nil or x == "" then
-        x = 0
-    end
+    if x == nil or x == "" then x = 0 end
 
     return x
 end
 
 function rf2gov.create(widget)
-    return 
+    return
 end
 
 function rf2gov.paint(widget)
@@ -80,9 +75,7 @@ function rf2gov.getSensors()
                     govmode = "UNKNOWN"
                 end
             else
-                if system.getSource("Flight mode") ~= nil then
-                    govmode = system.getSource("Flight mode"):stringValue()
-                end
+                if system.getSource("Flight mode") ~= nil then govmode = system.getSource("Flight mode"):stringValue() end
             end
         else
             -- we are run sport
@@ -121,9 +114,7 @@ function rf2gov.getSensors()
         end
     end
 
-    if rf2gov.oldsensors.govmode ~= govmode then
-        rf2gov.refresh = true
-    end
+    if rf2gov.oldsensors.govmode ~= govmode then rf2gov.refresh = true end
 
     ret = {govmode = govmode}
     rf2gov.oldsensors = ret
@@ -135,9 +126,7 @@ function rf2gov.wakeup(widget)
     rf2gov.refresh = false
     sensors = rf2gov.getSensors()
 
-    if rf2gov.refresh == true then
-        lcd.invalidate()
-    end
+    if rf2gov.refresh == true then lcd.invalidate() end
 
     return
 end
